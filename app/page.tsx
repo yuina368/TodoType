@@ -126,18 +126,13 @@ export default function Home() {
                 <button className="text-xs text-blue-500 hover:text-blue-700 font-medium px-2 py-1 rounded transition-colors">
                   <button className="text-xs text-blue-500 hover:text-blue-700 font-medium px-2 py-1 rounded transition-colors">
                   高
-                  </butto>
-                  <button className="text-xs text-blue-500 hover:text-blue-700 font-medium px-2 py-1 rounded transition-colors">
+                  </button>
+                  <button  className="text-xs text-blue-500 hover:text-blue-700 font-medium px-2 py-1 rounded transition-colors">
                   中
-                  </bu>
+                  </button>
                   <button className="text-xs text-blue-500 hover:text-blue-700 font-medium px-2 py-1 rounded transition-colors">
                   低
                   </button>
-                </button>
-                <button className="text-xs text-yellow-500 hover:text-yellow-700 font-medium px-2 py-1 rounded transition-colors">
-                </button>
-                <button className="text-xs text-green-500 hover:text-green-700 font-medium px-2 py-1 rounded transition-colors">
-                  詳細 
                 </button>
               </li>
             ))
