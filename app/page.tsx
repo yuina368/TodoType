@@ -124,7 +124,20 @@ export default function Home() {
                   削除
                 </button>
                 <button className="text-xs text-blue-500 hover:text-blue-700 font-medium px-2 py-1 rounded transition-colors">
-                  優先度を高中低で選択できるようにする
+                  <>
+                  高
+                  </>
+                  <>
+                  中
+                  </>
+                  <>
+                  低
+                  </>
+                </button>
+                <button className="text-xs text-yellow-500 hover:text-yellow-700 font-medium px-2 py-1 rounded transition-colors">
+                </button>
+                <button className="text-xs text-green-500 hover:text-green-700 font-medium px-2 py-1 rounded transition-colors">
+                  詳細 
                 </button>
               </li>
             ))
