@@ -1,69 +1,133 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from "react";
+
+// Todoアイテムの型定義
+interface Todo {
+  id: string;
+  text: string;
+  completed: boolean;
+}
 
 export default function Home() {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [inputText, setInputText] = useState("");
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // 初回マウント時: localStorageから読み込み
+  useEffect(() => {
+    const saved = localStorage.getItem("next_todos");
+    if (saved) {
+      try {
+        setTodos(JSON.parse(saved));
+      } catch (e) {
+        console.error("データのパースに失敗しました", e);
+      }
+    }
+    setIsLoaded(true);
+  }, []);
+
+  // todos更新時: localStorageへ保存
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem("next_todos", JSON.stringify(todos));
+    }
+  }, [todos, isLoaded]);
+
+  // タスクの追加
+  const handleAddTodo = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputText.trim()) return;
+
+    const newTodo: Todo = {
+      id: crypto.randomUUID(),
+      text: inputText.trim(),
+      completed: false,
+    };
+
+    setTodos((prev) => [newTodo, ...prev]);
+    setInputText("");
+  };
+
+  // 完了フラグの切り替え
+  const handleToggleTodo = (id: string) => {
+    setTodos((prev) =>
+      prev.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+  };
+
+  // タスクの削除
+  const handleDeleteTodo = (id: string) => {
+    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="min-h-screen bg-slate-50 py-12 px-4">
+      <div className="max-w-md mx-auto bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <h1 className="text-2xl font-bold text-slate-800 mb-6 text-center">
+          Todo App
+        </h1>
+
+        {/* 入力フォーム */}
+        <form onSubmit={handleAddTodo} className="flex gap-2 mb-6">
+          <input
+            type="text"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            placeholder="新しいタスクを入力..."
+            className="flex-1 px-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-900"
+          />
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+            追加
+          </button>
+        </form>
+
+        {/* Todoリスト */}
+        <ul className="space-y-2">
+          {todos.length === 0 ? (
+            <li className="text-center py-6 text-sm text-slate-400">
+              タスクがありません
+            </li>
+          ) : (
+            todos.map((todo) => (
+              <li
+                key={todo.id}
+                className="flex items-center justify-between p-3 rounded-lg border border-slate-100 bg-slate-50 hover:bg-slate-100 transition-colors"
+              >
+                <div className="flex items-center gap-3 flex-1 overflow-hidden mr-2">
+                  <input
+                    type="checkbox"
+                    checked={todo.completed}
+                    onChange={() => handleToggleTodo(todo.id)}
+                    className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                  />
+                  <span
+                    className={`text-sm truncate cursor-pointer select-none ${
+                      todo.completed
+                        ? "line-through text-slate-400"
+                        : "text-slate-700"
+                    }`}
+                    onClick={() => handleToggleTodo(todo.id)}
+                  >
+                    {todo.text}
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleDeleteTodo(todo.id)}
+                  className="text-xs text-red-500 hover:text-red-700 font-medium px-2 py-1 rounded transition-colors"
+                >
+                  削除
+                </button>
+              </li>
+            ))
+          )}
+        </ul>
+      </div>
+    </main>
   );
 }
