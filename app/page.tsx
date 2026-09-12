@@ -7,6 +7,7 @@ interface Todo {
   id: string;
   text: string;
   completed: boolean;
+  priority?: "high" | "medium" | "low"; // 優先度の追加
 }
 
 export default function Home() {
@@ -43,6 +44,7 @@ export default function Home() {
       id: crypto.randomUUID(),
       text: inputText.trim(),
       completed: false,
+      priority: "medium", // デフォルトの優先度
     };
 
     setTodos((prev) => [newTodo, ...prev]);
@@ -124,8 +126,19 @@ export default function Home() {
                   削除
                 </button>
                 <button
-                  className="text-xs text-red-500 hover:text-red-700 font-medium px-2 py-1 rounded transition-colors">
-                  高
+                  className={`text-xs font-medium px-2 py-1 rounded transition-colors ${
+                    todo.priority === "high"
+                      ? "text-red-500 hover:text-red-700"
+                      : todo.priority === "medium"
+                      ? "text-yellow-500 hover:text-yellow-700"
+                      : "text-green-500 hover:text-green-700"
+                  }`}
+                >
+                  {todo.priority === "high"
+                    ? "高"
+                    : todo.priority === "medium"
+                    ? "中"
+                    : "低"}
                 </button>
                 <button
                   className="text-xs text-yellow-500 hover:text-yellow-700 font-medium px-2 py-1 rounded transition-colors">
