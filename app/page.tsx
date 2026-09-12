@@ -132,7 +132,7 @@ export default function Home() {
                   中
                 </button>
                 <button
-                  className="text-xs text-blue-500 hover:text-blue-700 font-medium px-2 py-1 rounded transition-colors">
+                  className="text-xs text-green-500 hover:text-green-700 font-medium px-2 py-1 rounded transition-colors">
                   低
                 </button>
               </li>
